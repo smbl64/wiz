@@ -5,8 +5,9 @@ import (
 )
 
 var editCmd = &cobra.Command{
-	Use:   "edit",
-	Short: "Edit a pattern",
+	Use:                   "edit <pattern>",
+	Short:                 "Edit a pattern",
+	DisableFlagsInUseLine: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return nil
 	},
