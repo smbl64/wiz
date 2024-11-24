@@ -1,11 +1,13 @@
 package generate
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"os"
 	"strings"
+	"wiz/internal/generate"
 
-	"github.com/k0kubun/pp/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -14,20 +16,45 @@ var generateCmd = &cobra.Command{
 	Aliases: []string{"g"},
 	Short:   "Call LLM to generate text [alias: g]",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var input string
+		var prompt string
 
 		if len(args) > 0 {
-			input = strings.Join(args, " ")
+			prompt = strings.Join(args, " ")
 		} else {
 			si, err := io.ReadAll(os.Stdin)
 			if err != nil {
 				return err
 			}
 
-			input = strings.TrimSuffix(string(si), "\n")
+			prompt = strings.TrimSuffix(string(si), "\n")
 		}
 
-		pp.Println(input)
+		temperature, _ := cmd.Flags().GetFloat64("temperature")
+		topP, _ := cmd.Flags().GetFloat64("top-p")
+		freqPenalty, _ := cmd.Flags().GetFloat64("frequency-penalty")
+		presencePenalty, _ := cmd.Flags().GetFloat64("presence-penalty")
+
+		model, _ := cmd.Flags().GetString("model")
+		if model == "" {
+			model = "qwen2.5:latest" // TODO default model
+		}
+
+		req := generate.GenerateRequest{
+			Prompt:           prompt,
+			Model:            model,
+			Temperature:      temperature,
+			TopP:             topP,
+			FrequencyPenalty: freqPenalty,
+			PresencePenalty:  presencePenalty,
+		}
+
+		resp, err := generate.Generate(context.Background(), req)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(resp)
+
 		return nil
 	},
 }
@@ -37,10 +64,10 @@ func Initialize(rootCmd *cobra.Command) {
 	generateCmd.Flags().Bool("dry-run", false, "Show what would be sent to the model without actually sending it")
 	generateCmd.Flags().BoolP("stream", "s", false, "Stream the generated response from the model")
 	generateCmd.Flags().StringP("pattern", "p", "", "Pattern to use")
-	generateCmd.Flags().Float32P("temperature", "t", 0.7, "Set the temperature")
-	generateCmd.Flags().Float32P("top-p", "T", 0.9, "Set the top P")
-	generateCmd.Flags().Float32("frequency-penalty", 0.0, "Set the frequencey penalty")
-	generateCmd.Flags().Float32("presence-penalty", 0.0, "Set the presence penalty")
+	generateCmd.Flags().Float64P("temperature", "t", 0.7, "Set the temperature")
+	generateCmd.Flags().Float64P("top-p", "T", 0.9, "Set the top P")
+	generateCmd.Flags().Float64("frequency-penalty", 0.0, "Set the frequencey penalty")
+	generateCmd.Flags().Float64("presence-penalty", 0.0, "Set the presence penalty")
 
 	rootCmd.AddCommand(generateCmd)
 }
