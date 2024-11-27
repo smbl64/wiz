@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/smbl64/wiz/internal/config"
 	"github.com/smbl64/wiz/internal/generate"
 	"github.com/smbl64/wiz/internal/patmgr"
 
@@ -17,7 +19,7 @@ var generateCmd = &cobra.Command{
 	Use:     "generate [flags] <input text>",
 	Aliases: []string{"g"},
 	Short:   "Call LLM to generate text [alias: g]",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		var prompt string
 
 		if len(args) > 0 {
@@ -25,7 +27,8 @@ var generateCmd = &cobra.Command{
 		} else {
 			si, err := io.ReadAll(os.Stdin)
 			if err != nil {
-				return err
+				cmd.PrintErrf("failed to read stdin: %v", err)
+				return
 			}
 
 			prompt = strings.TrimSuffix(string(si), "\n")
@@ -35,10 +38,23 @@ var generateCmd = &cobra.Command{
 		topP, _ := cmd.Flags().GetFloat64("top-p")
 		freqPenalty, _ := cmd.Flags().GetFloat64("frequency-penalty")
 		presencePenalty, _ := cmd.Flags().GetFloat64("presence-penalty")
+		stream, _ := cmd.Flags().GetBool("stream")
 
 		model, _ := cmd.Flags().GetString("model")
 		if model == "" {
-			model = "qwen2.5:latest" // TODO default model
+			model = config.Current().Model
+		}
+
+		// Read pattern if required
+		patName, _ := cmd.Flags().GetString("pattern")
+		if patName != "" {
+			pattern, err := patmgr.Default().Load(patName)
+			if err != nil {
+				cmd.PrintErrf("cannot read pattern: %v", err)
+				return
+			}
+
+			prompt = fmt.Sprintf("%s\n%s", pattern, prompt)
 		}
 
 		gen := generate.Generator{
@@ -49,14 +65,24 @@ var generateCmd = &cobra.Command{
 			PresencePenalty:  presencePenalty,
 		}
 
-		resp, err := gen.Generate(context.Background(), prompt)
-		if err != nil {
-			return err
+		if stream {
+			gen.StreamingFunc = func(chunk string) error {
+				fmt.Fprint(cmd.OutOrStdout(), chunk)
+				return nil
+			}
 		}
 
-		fmt.Println(resp)
+		resp, err := gen.Generate(context.Background(), prompt)
+		if err != nil {
+			cmd.PrintErrf("failed to generate content: %v", err)
+			return
+		}
 
-		return nil
+		if !stream {
+			fmt.Fprint(cmd.OutOrStdout(), resp)
+		}
+
+		fmt.Fprint(cmd.OutOrStdout(), "\n")
 	},
 }
 

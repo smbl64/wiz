@@ -19,7 +19,7 @@ func New(rootDir string) *PatternManager {
 
 func Default() *PatternManager {
 	return &PatternManager{
-		rootDir: config.Get().PatternsDir,
+		rootDir: config.Current().PatternsDir,
 	}
 }
 
