@@ -16,7 +16,7 @@ import (
 )
 
 var generateCmd = &cobra.Command{
-	Use:     "generate [flags] <input text>",
+	Use:     "gen [flags] <input text>",
 	Aliases: []string{"g"},
 	Short:   "Call LLM to generate text [alias: g]",
 	Run: func(cmd *cobra.Command, args []string) {
