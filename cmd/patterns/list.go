@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/smbl64/wiz/internal/patmgr"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,7 @@ var listCmd = &cobra.Command{
 	Aliases: []string{"ls"},
 	Short:   "List patterns",
 	Run: func(cmd *cobra.Command, args []string) {
-		mgr := makeManager()
+		mgr := patmgr.Default()
 		list, err := mgr.List()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed: %v", err)

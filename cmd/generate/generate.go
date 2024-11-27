@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 	"strings"
-	"wiz/internal/generate"
-	"wiz/internal/patmgr"
+	"github.com/smbl64/wiz/internal/generate"
+	"github.com/smbl64/wiz/internal/patmgr"
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"

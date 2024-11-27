@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"wiz/internal/config"
+	"github.com/smbl64/wiz/internal/config"
 )
 
 type PatternManager struct {

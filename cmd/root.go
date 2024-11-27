@@ -3,10 +3,11 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"wiz/cmd/config"
-	"wiz/cmd/generate"
-	"wiz/cmd/patterns"
-	"wiz/cmd/tools"
+
+	"github.com/smbl64/wiz/cmd/config"
+	"github.com/smbl64/wiz/cmd/generate"
+	"github.com/smbl64/wiz/cmd/patterns"
+	"github.com/smbl64/wiz/cmd/tools"
 
 	"github.com/spf13/cobra"
 )

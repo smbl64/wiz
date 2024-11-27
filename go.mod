@@ -1,4 +1,4 @@
-module wiz
+module github.com/smbl64/wiz
 
 go 1.23.1
 
