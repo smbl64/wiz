@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"wiz/internal/config"
 )
 
 type PatternManager struct {
@@ -14,7 +15,12 @@ type PatternManager struct {
 // New creates a new PatternManager
 func New(rootDir string) *PatternManager {
 	return &PatternManager{rootDir: rootDir}
+}
 
+func Default() *PatternManager {
+	return &PatternManager{
+		rootDir: config.Get().PatternsDir,
+	}
 }
 
 func (m *PatternManager) List() ([]string, error) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"wiz/internal/patmgr"
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -15,7 +16,7 @@ var showCmd = &cobra.Command{
 	DisableFlagsInUseLine: true,
 	Short:                 "Show pattern",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		mgr := makeManager()
+		mgr := patmgr.Default()
 
 		list, err := mgr.List()
 		if err != nil {
@@ -34,7 +35,7 @@ var showCmd = &cobra.Command{
 		}
 
 		patName := args[0]
-		mgr := makeManager()
+		mgr := patmgr.Default()
 
 		tldr, err := mgr.Load(patName)
 		if err != nil {

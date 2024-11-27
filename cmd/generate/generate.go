@@ -7,7 +7,9 @@ import (
 	"os"
 	"strings"
 	"wiz/internal/generate"
+	"wiz/internal/patmgr"
 
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -68,5 +70,22 @@ func Initialize(rootCmd *cobra.Command) {
 	generateCmd.Flags().Float64("frequency-penalty", 0.0, "Set the frequencey penalty")
 	generateCmd.Flags().Float64("presence-penalty", 0.0, "Set the presence penalty")
 
+	generateCmd.RegisterFlagCompletionFunc("pattern", listPatterns)
+
 	rootCmd.AddCommand(generateCmd)
+}
+
+func listPatterns(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	mgr := patmgr.Default()
+
+	list, err := mgr.List()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	res := lo.Filter(list, func(item string, _ int) bool {
+		return strings.HasPrefix(item, toComplete)
+	})
+
+	return res, cobra.ShellCompDirectiveNoFileComp
 }
