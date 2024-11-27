@@ -39,8 +39,7 @@ var generateCmd = &cobra.Command{
 			model = "qwen2.5:latest" // TODO default model
 		}
 
-		req := generate.GenerateRequest{
-			Prompt:           prompt,
+		gen := generate.Generator{
 			Model:            model,
 			Temperature:      temperature,
 			TopP:             topP,
@@ -48,7 +47,7 @@ var generateCmd = &cobra.Command{
 			PresencePenalty:  presencePenalty,
 		}
 
-		resp, err := generate.Generate(context.Background(), req)
+		resp, err := gen.Generate(context.Background(), prompt)
 		if err != nil {
 			return err
 		}

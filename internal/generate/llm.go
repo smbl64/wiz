@@ -9,30 +9,29 @@ import (
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
-type GenerateRequest struct {
-	Prompt          string
-	Model           string
-	Temperature     float64
-	TopP            float64
-	FrequencyPenalty     float64
-	PresencePenalty float64
+type Generator struct {
+	Model            string
+	Temperature      float64
+	TopP             float64
+	FrequencyPenalty float64
+	PresencePenalty  float64
 }
 
-func Generate(ctx context.Context, req GenerateRequest) (string, error) {
-	llm, err := makeOllamaModel(req.Model)
+func (g *Generator) Generate(ctx context.Context, prompt string) (string, error) {
+	llm, err := makeOllamaModel(g.Model)
 	if err != nil {
 		return "", fmt.Errorf("failed to create ollama client: %v", err)
 	}
 
-	m := llms.TextParts(llms.ChatMessageTypeHuman, req.Prompt)
+	m := llms.TextParts(llms.ChatMessageTypeHuman, prompt)
 
 	resp, err := llm.GenerateContent(
 		ctx,
 		[]llms.MessageContent{m},
-		llms.WithTemperature(req.Temperature),
-		llms.WithTopP(req.TopP),
-		llms.WithFrequencyPenalty(req.FrequencyPenalty),
-		llms.WithPresencePenalty(req.PresencePenalty),
+		llms.WithTemperature(g.Temperature),
+		llms.WithTopP(g.TopP),
+		llms.WithFrequencyPenalty(g.FrequencyPenalty),
+		llms.WithPresencePenalty(g.PresencePenalty),
 	)
 
 	if err != nil {
