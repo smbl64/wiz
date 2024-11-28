@@ -18,17 +18,21 @@ type Generator struct {
 	StreamingFunc    func(chunk string) error
 }
 
-func (g *Generator) Generate(ctx context.Context, prompt string) (string, error) {
+func (g *Generator) Generate(ctx context.Context, system, prompt string) (string, error) {
 	llm, err := makeOllamaModel(g.Model)
 	if err != nil {
 		return "", fmt.Errorf("failed to create ollama client: %v", err)
 	}
 
-	m := llms.TextParts(llms.ChatMessageTypeHuman, prompt)
+	var content []llms.MessageContent
 
-	stfunc := noopStreamingFunc
+	if system != "" {
+		content = append(content, llms.TextParts(llms.ChatMessageTypeSystem, system))
+	}
+	content = append(content, llms.TextParts(llms.ChatMessageTypeHuman, prompt))
 
 	// A proxy over the given streaming func, to simplify things
+	stfunc := noopStreamingFunc
 	if g.StreamingFunc != nil {
 		stfunc = func(_ context.Context, chunk []byte) error {
 			return g.StreamingFunc(string(chunk))
@@ -37,7 +41,7 @@ func (g *Generator) Generate(ctx context.Context, prompt string) (string, error)
 
 	resp, err := llm.GenerateContent(
 		ctx,
-		[]llms.MessageContent{m},
+		content,
 		llms.WithTemperature(g.Temperature),
 		llms.WithTopP(g.TopP),
 		llms.WithFrequencyPenalty(g.FrequencyPenalty),

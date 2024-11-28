@@ -46,6 +46,7 @@ var generateCmd = &cobra.Command{
 		}
 
 		// Read pattern if required
+		var system string
 		patName, _ := cmd.Flags().GetString("pattern")
 		if patName != "" {
 			pattern, err := patmgr.Default().Load(patName)
@@ -54,7 +55,7 @@ var generateCmd = &cobra.Command{
 				return
 			}
 
-			prompt = fmt.Sprintf("%s\n%s", pattern, prompt)
+			system = pattern
 		}
 
 		gen := generate.Generator{
@@ -72,7 +73,7 @@ var generateCmd = &cobra.Command{
 			}
 		}
 
-		resp, err := gen.Generate(context.Background(), prompt)
+		resp, err := gen.Generate(context.Background(), system, prompt)
 		if err != nil {
 			cmd.PrintErrf("failed to generate content: %v", err)
 			return
