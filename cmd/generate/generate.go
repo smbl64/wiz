@@ -8,7 +8,7 @@ import (
 	"github.com/smbl64/wiz/internal/config"
 	"github.com/smbl64/wiz/internal/generate"
 	"github.com/smbl64/wiz/internal/patmgr"
-	"github.com/smbl64/wiz/internal/terminal"
+	"github.com/smbl64/wiz/internal/util/terminal"
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
