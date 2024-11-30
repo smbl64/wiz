@@ -3,13 +3,12 @@ package generate
 import (
 	"context"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 
 	"github.com/smbl64/wiz/internal/config"
 	"github.com/smbl64/wiz/internal/generate"
 	"github.com/smbl64/wiz/internal/patmgr"
+	"github.com/smbl64/wiz/internal/terminal"
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -20,19 +19,14 @@ var generateCmd = &cobra.Command{
 	Aliases: []string{"g"},
 	Short:   "Call LLM to generate text [alias: g]",
 	Run: func(cmd *cobra.Command, args []string) {
-		var prompt string
+		prompt := strings.Join(args, " ")
 
-		if len(args) > 0 {
-			prompt = strings.Join(args, " ")
-		} else {
-			si, err := io.ReadAll(os.Stdin)
-			if err != nil {
-				cmd.PrintErrf("failed to read stdin: %v", err)
-				return
-			}
-
-			prompt = strings.TrimSuffix(string(si), "\n")
+		stdinData, err := terminal.ReadStdinIfData()
+		if err != nil {
+			cmd.PrintErr(err)
+			return
 		}
+		prompt = fmt.Sprintf("%s\n%s", prompt, stdinData)
 
 		temperature, _ := cmd.Flags().GetFloat64("temperature")
 		topP, _ := cmd.Flags().GetFloat64("top-p")

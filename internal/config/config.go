@@ -11,3 +11,8 @@ func Current() *Config {
 		Model:       "qwen2.5:latest",
 	}
 }
+
+// Load the default configuration.
+func Load() error {
+	return nil
+}
