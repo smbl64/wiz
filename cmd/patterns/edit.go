@@ -5,6 +5,7 @@ import (
 	"os/exec"
 
 	"github.com/smbl64/wiz/internal/patmgr"
+	"github.com/smbl64/wiz/internal/util/flags"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +15,7 @@ var editCmd = &cobra.Command{
 	Use:                   "edit <pattern>",
 	Short:                 "Edit a pattern",
 	DisableFlagsInUseLine: true,
-	ValidArgsFunction:     patternFlagCompletion,
+	ValidArgsFunction:     flags.PatternsFlagCompletionFunc,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			return cmd.Usage()

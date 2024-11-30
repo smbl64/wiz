@@ -1,4 +1,4 @@
-package patterns
+package flags
 
 import (
 	"strings"
@@ -8,7 +8,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func patternFlagCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+// PatternsFlagCompletionFunc provides shell completion for patterns.
+//
+// It can be assigned to `ValidArgsFunction`, or used with `cmd.RegisterFlagCompletionFunc`.
+func PatternsFlagCompletionFunc(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	mgr := patmgr.Default()
 
 	list, err := mgr.List()
