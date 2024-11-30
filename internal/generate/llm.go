@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/smbl64/wiz/internal/config"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/ollama"
 	"github.com/tmc/langchaingo/llms/openai"
@@ -19,7 +20,7 @@ type Generator struct {
 }
 
 func (g *Generator) Generate(ctx context.Context, system, prompt string) (string, error) {
-	llm, err := makeOllamaModel(g.Model)
+	llm, err := makeOllamaModel(config.Current().OllamaAPIBase, g.Model)
 	if err != nil {
 		return "", fmt.Errorf("failed to create ollama client: %v", err)
 	}
@@ -60,8 +61,8 @@ func noopStreamingFunc(ctx context.Context, chunk []byte) error {
 	return nil
 }
 
-func makeOllamaModel(modelName string) (llms.Model, error) {
-	return ollama.New(ollama.WithModel(modelName))
+func makeOllamaModel(serverURL, modelName string) (llms.Model, error) {
+	return ollama.New(ollama.WithModel(modelName), ollama.WithServerURL(serverURL))
 }
 
 func makeOpenAIModel(token, modelName string) (llms.Model, error) {

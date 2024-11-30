@@ -2,11 +2,16 @@
 package patmgr
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+
 	"github.com/smbl64/wiz/internal/config"
+	"github.com/smbl64/wiz/internal/util/paths"
 )
+
+var ErrNoExist = errors.New("Pattern does not exist")
 
 type PatternManager struct {
 	rootDir string
@@ -39,7 +44,10 @@ func (m *PatternManager) List() ([]string, error) {
 }
 
 func (m *PatternManager) Load(patternName string) (string, error) {
-	fullPath := filepath.Join(m.rootDir, patternName, "system.md")
+	fullPath, err := m.GetSystemFileName(patternName)
+	if err != nil {
+		return "", err
+	}
 
 	bb, err := os.ReadFile(fullPath)
 	if err != nil {
@@ -47,4 +55,18 @@ func (m *PatternManager) Load(patternName string) (string, error) {
 	}
 
 	return string(bb), nil
+}
+
+func (m *PatternManager) GetSystemFileName(patternName string) (string, error) {
+	fullPath := filepath.Join(m.rootDir, patternName, "system.md")
+	exist, err := paths.Exists(fullPath)
+	if err != nil {
+		return "", err
+	}
+
+	if !exist {
+		return "", ErrNoExist
+	}
+
+	return fullPath, nil
 }
