@@ -11,7 +11,7 @@ import (
 	"github.com/smbl64/wiz/internal/util/paths"
 )
 
-var ErrNoExist = errors.New("Pattern does not exist")
+var ErrNotExist = errors.New("Pattern does not exist")
 
 type PatternManager struct {
 	rootDir string
@@ -65,7 +65,7 @@ func (m *PatternManager) GetSystemFileName(patternName string) (string, error) {
 	}
 
 	if !exist {
-		return "", ErrNoExist
+		return "", ErrNotExist
 	}
 
 	return fullPath, nil
