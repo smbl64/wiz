@@ -15,24 +15,32 @@ import (
 )
 
 var generateCmd = &cobra.Command{
-	Use:     "gen [flags] <input text>",
+	Use:     "generate [flags] <input text>",
 	Aliases: []string{"g"},
 	Short:   "Call LLM to generate text [alias: g]",
 	Run: func(cmd *cobra.Command, args []string) {
-		prompt := strings.Join(args, " ")
+		prompt := strings.TrimSpace(strings.Join(args, " "))
 
 		stdinData, err := terminal.ReadStdinIfData()
 		if err != nil {
 			cmd.PrintErr(err)
 			return
+		} else if len(stdinData) > 0 {
+			prompt = fmt.Sprintf("%s\n%s", prompt, stdinData)
 		}
-		prompt = fmt.Sprintf("%s\n%s", prompt, stdinData)
+
+		prompt = strings.TrimSpace(prompt)
+		if len(prompt) == 0 {
+			cmd.PrintErr("No message is provided")
+			return
+		}
 
 		temperature, _ := cmd.Flags().GetFloat64("temperature")
 		topP, _ := cmd.Flags().GetFloat64("top-p")
 		freqPenalty, _ := cmd.Flags().GetFloat64("frequency-penalty")
 		presencePenalty, _ := cmd.Flags().GetFloat64("presence-penalty")
 		stream, _ := cmd.Flags().GetBool("stream")
+		dryRun, _ := cmd.Flags().GetBool("dry-run")
 
 		model, _ := cmd.Flags().GetString("model")
 		if model == "" {
@@ -65,6 +73,16 @@ var generateCmd = &cobra.Command{
 				fmt.Fprint(cmd.OutOrStdout(), chunk)
 				return nil
 			}
+		}
+
+		if dryRun {
+			cmd.Printf("System:\n%s\n", system)
+			cmd.Println()
+			cmd.Printf("User:\n%s\n", prompt)
+			cmd.Println()
+			cmd.Printf("Model: %s\n", model)
+			cmd.Println()
+			return
 		}
 
 		resp, err := gen.Generate(context.Background(), system, prompt)
