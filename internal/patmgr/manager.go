@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/smbl64/wiz/internal/config"
 	"github.com/smbl64/wiz/internal/util/paths"
@@ -38,6 +39,14 @@ func (m *PatternManager) List() ([]string, error) {
 
 	result := make([]string, len(entries))
 	for i, e := range entries {
+		if strings.HasPrefix(e.Name(), ".") {
+			continue
+		}
+
+		if !e.IsDir() {
+			continue
+		}
+
 		result[i] = e.Name()
 	}
 
