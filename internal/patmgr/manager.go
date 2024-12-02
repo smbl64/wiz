@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/smbl64/wiz/internal/config"
@@ -24,7 +25,7 @@ func New(rootDir string) *PatternManager {
 
 func Default() *PatternManager {
 	return &PatternManager{
-		rootDir: config.Current().PatternsDir,
+		rootDir: path.Join(config.ConfigDir(), "patterns"),
 	}
 }
 
