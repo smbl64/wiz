@@ -26,3 +26,22 @@ func TestLoadNotExist(t *testing.T) {
 	_, err := mgr.Load("pat-non-existing")
 	assert.Error(t, err)
 }
+
+func TestGetPatternFolder(t *testing.T) {
+	mgr := New("/some/path/")
+	got := mgr.getPatternFolder("foo")
+	assert.Equal(t, "/some/path/foo", got)
+}
+
+func TestGetSystemFileName(t *testing.T) {
+	mgr := New("./testdata")
+
+	// Check a pattern that does exist
+	fname, err := mgr.GetSystemFileName("pat1")
+	assert.NoError(t, err)
+	assert.Equal(t, "testdata/pat1/system.md", fname)
+
+	// Check a pattern that does not exist
+	_, err = mgr.GetSystemFileName("not_there")
+	assert.ErrorIs(t, ErrNotExist, err)
+}
