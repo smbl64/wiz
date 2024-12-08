@@ -12,8 +12,9 @@ import (
 )
 
 var scrapeCmd = &cobra.Command{
-	Use:   "scrape <url>",
-	Short: "Scrape a website and print the text",
+	Use:               "scrape <url>",
+	Short:             "Scrape a website and print the text",
+	ValidArgsFunction: cobra.NoFileCompletions,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("url is not specified")
