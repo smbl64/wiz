@@ -1,9 +1,11 @@
+// paths package provides helpers functions to interact with files and directories.
 package paths
 
 import (
 	"os"
 )
 
+// Exists checks to see if the given path exists.
 func Exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 

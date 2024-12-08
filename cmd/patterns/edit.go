@@ -21,22 +21,33 @@ var editCmd = &cobra.Command{
 			return cmd.Usage()
 		}
 
-		editor := getDefaultEditor()
-
-		systemFile, err := patmgr.Default().GetSystemFileName(args[0])
-		if err != nil {
-			cmd.PrintErr(err)
-			return nil
-		}
-
-		c := exec.Command(editor, systemFile)
-		c.Stdin = os.Stdin
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Run()
-
-		return nil
+		patName := args[0]
+		return openPatternForEdit(cmd, patName)
 	},
+}
+
+func openPatternForEdit(cmd *cobra.Command, patterName string) error {
+	systemFile, err := patmgr.Default().GetSystemFileName(patterName)
+	if err != nil {
+		cmd.PrintErr(err)
+		return nil
+	}
+
+	if err = editFile(systemFile); err != nil {
+		cmd.PrintErr(cmd)
+	}
+
+	return nil
+}
+
+func editFile(filePath string) error {
+	editor := getDefaultEditor()
+	c := exec.Command(editor, filePath)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
+
 }
 
 func getDefaultEditor() string {

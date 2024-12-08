@@ -67,9 +67,26 @@ func (m *PatternManager) Load(patternName string) (string, error) {
 	return string(bb), nil
 }
 
+func (m *PatternManager) Exists(patternName string) (bool, error) {
+	_, err := m.GetSystemFileName(patternName)
+	if err != nil && errors.Is(err, ErrNotExist) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (m *PatternManager) getPatternFolder(patternName string) string {
+	return filepath.Join(m.rootDir, patternName)
+}
+
 func (m *PatternManager) GetSystemFileName(patternName string) (string, error) {
-	fullPath := filepath.Join(m.rootDir, patternName, "system.md")
-	exist, err := paths.Exists(fullPath)
+	patFolder := m.getPatternFolder(patternName)
+	sysFilePath := filepath.Join(patFolder, "system.md")
+
+	exist, err := paths.Exists(sysFilePath)
 	if err != nil {
 		return "", err
 	}
@@ -78,5 +95,22 @@ func (m *PatternManager) GetSystemFileName(patternName string) (string, error) {
 		return "", ErrNotExist
 	}
 
-	return fullPath, nil
+	return sysFilePath, nil
+}
+
+func (m *PatternManager) Create(systemContent []byte, patternName string) error {
+	patFolder := m.getPatternFolder(patternName)
+	err := os.Mkdir(patFolder, 0755)
+	if err != nil {
+		return fmt.Errorf("failed to create the pattern folder: %v", err)
+	}
+
+	sysFilePath := filepath.Join(patFolder, "system.md")
+	err = os.WriteFile(sysFilePath, systemContent, 0644)
+
+	if err != nil {
+		return fmt.Errorf("failed to write the pattern content: %v", err)
+	}
+
+	return nil
 }

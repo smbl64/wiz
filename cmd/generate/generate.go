@@ -15,9 +15,10 @@ import (
 )
 
 var generateCmd = &cobra.Command{
-	Use:     "generate [flags] <input text>",
-	Aliases: []string{"g"},
-	Short:   "Call LLM to generate text [alias: g]",
+	Use:               "generate [flags] <input text>",
+	Aliases:           []string{"g", "gen"},
+	Short:             "Call LLM to generate text [alias: g, gen]",
+	ValidArgsFunction: cobra.NoFileCompletions,
 	Run: func(cmd *cobra.Command, args []string) {
 		prompt := strings.TrimSpace(strings.Join(args, " "))
 
