@@ -111,6 +111,7 @@ func Initialize(rootCmd *cobra.Command) {
 	generateCmd.Flags().Float64("presence-penalty", 0.0, "Set the presence penalty")
 
 	generateCmd.RegisterFlagCompletionFunc("pattern", flags.PatternsFlagCompletionFunc)
+	generateCmd.RegisterFlagCompletionFunc("model", flags.ModelsFlagCompletionFunc)
 
 	rootCmd.AddCommand(generateCmd)
 }
