@@ -107,7 +107,7 @@ func Initialize(rootCmd *cobra.Command) {
 	generateCmd.Flags().StringP("pattern", "p", "", "Pattern to use")
 	generateCmd.Flags().Float64P("temperature", "t", 0.7, "Set the temperature")
 	generateCmd.Flags().Float64P("top-p", "T", 0.9, "Set the top P")
-	generateCmd.Flags().Float64("frequency-penalty", 0.0, "Set the frequencey penalty")
+	generateCmd.Flags().Float64("frequency-penalty", 0.0, "Set the frequency penalty")
 	generateCmd.Flags().Float64("presence-penalty", 0.0, "Set the presence penalty")
 
 	generateCmd.RegisterFlagCompletionFunc("pattern", flags.PatternsFlagCompletionFunc)
