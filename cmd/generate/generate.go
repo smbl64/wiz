@@ -27,7 +27,7 @@ var generateCmd = &cobra.Command{
 			cmd.PrintErr(err)
 			return
 		} else if len(stdinData) > 0 {
-			prompt = fmt.Sprintf("%s\n%s", prompt, stdinData)
+			prompt = fmt.Sprintf("%s\n%s", stdinData, prompt)
 		}
 
 		prompt = strings.TrimSpace(prompt)
