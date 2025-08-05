@@ -40,8 +40,10 @@ var generateCmd = &cobra.Command{
 		topP, _ := cmd.Flags().GetFloat64("top-p")
 		freqPenalty, _ := cmd.Flags().GetFloat64("frequency-penalty")
 		presencePenalty, _ := cmd.Flags().GetFloat64("presence-penalty")
-		stream, _ := cmd.Flags().GetBool("stream")
+		noStream, _ := cmd.Flags().GetBool("no-stream")
 		dryRun, _ := cmd.Flags().GetBool("dry-run")
+
+		stream := !noStream
 
 		model, _ := cmd.Flags().GetString("model")
 		if model == "" {
@@ -103,7 +105,7 @@ var generateCmd = &cobra.Command{
 func Initialize(rootCmd *cobra.Command) {
 	generateCmd.Flags().String("model", "", "Specify the model to use")
 	generateCmd.Flags().Bool("dry-run", false, "Show what would be sent to the model without actually sending it")
-	generateCmd.Flags().BoolP("stream", "s", false, "Stream the generated response from the model")
+	generateCmd.Flags().Bool("no-stream", false, "Do not stream the generated response from the model")
 	generateCmd.Flags().StringP("pattern", "p", "", "Pattern to use")
 	generateCmd.Flags().Float64P("temperature", "t", 0.7, "Set the temperature")
 	generateCmd.Flags().Float64P("top-p", "T", 0.9, "Set the top P")
